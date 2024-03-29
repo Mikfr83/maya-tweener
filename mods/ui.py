@@ -12,11 +12,19 @@ import maya.mel as mel
 
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 
-# PySide2 is for Maya 2017+
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-from shiboken2 import wrapInstance
+# Maya version specific imports
+maya_version = int(cmds.about(version=True))
+
+if maya_version >= 2025:
+    from PySide6.QtCore import *
+    from PySide6.QtGui import *
+    from PySide6.QtWidgets import *
+    from shiboken6 import wrapInstance
+else:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+    from shiboken2 import wrapInstance
 
 if sys.version_info >= (3, 0):
     import mods.globals as g

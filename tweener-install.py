@@ -8,24 +8,35 @@ import logging
 import ssl
 from functools import partial
 
+# Python 3.0
 if sys.version_info >= (3, 0):
     from urllib.request import urlopen
 else:
     from urllib2 import urlopen
-    
+
+# Python 3.4
 if sys.version_info >= (3, 4):
     import importlib as imp
 else:
     import imp
-    
+
 import maya.cmds as cmds
 import maya.mel as mel
 import maya.utils as utils
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-from shiboken2 import wrapInstance
+# Maya version specific imports
+maya_version = int(cmds.about(version=True))
+
+if maya_version >= 2025:
+    from PySide6.QtCore import *
+    from PySide6.QtGui import *
+    from PySide6.QtWidgets import *
+    from shiboken6 import wrapInstance
+else:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+    from shiboken2 import wrapInstance
 
 github_url = 'https://api.github.com/repos/monoteba/maya-tweener/releases/latest'
 gMainProgressBar = mel.eval('$tmp = $gMainProgressBar')
