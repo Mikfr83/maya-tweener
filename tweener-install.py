@@ -8,6 +8,8 @@ import logging
 import ssl
 from functools import partial
 
+import maya.cmds
+
 # Python 3.0
 if sys.version_info >= (3, 0):
     from urllib.request import urlopen
@@ -25,9 +27,9 @@ import maya.mel as mel
 import maya.utils as utils
 
 # Maya version specific imports
-maya_version = int(cmds.about(version=True))
+maya_version = int(cmds.about(apiVersion=True))
 
-if maya_version >= 2025:
+if maya_version >= 20250000:
     from PySide6.QtCore import *
     from PySide6.QtGui import *
     from PySide6.QtWidgets import *
@@ -50,13 +52,13 @@ def onMayaDroppedPythonFile(*args):
 
 
 def main():
-    result = cmds.confirmDialog(t='Tweener Installation',
-                                m='Would you like to download and install Tweener?',
+    result = cmds.confirmDialog(title='Tweener Installation',
+                                message='Would you like to download and install Tweener?',
                                 button=['Download', 'Offline Installation', 'Cancel'],
-                                db='Download',
-                                cb='Cancel',
-                                ds='Cancel')
-    
+                                defaultButton='Download',
+                                cancelButton='Cancel',
+                                dismissString='Cancel')
+
     if result == 'Cancel':
         return
     
@@ -120,6 +122,8 @@ def download():
         return None
     
     # try to get file size
+    total_size = 1
+
     try:
         total_size = f.info().getheader('Content-Length').strip()
         header = True
@@ -128,9 +132,7 @@ def download():
     
     if header:
         total_size = int(total_size)
-    else:
-        total_size = 1
-    
+
     cmds.progressBar(gMainProgressBar,
                      edit=True,
                      beginProgress=True,
@@ -144,7 +146,7 @@ def download():
                 chunk = f.read(4096)
                 if not chunk:
                     break
-                cmds.progressBar(gMainProgressBar, e=True, step=len(chunk))
+                cmds.progressBar(gMainProgressBar, edit=True, step=len(chunk))
                 local_file.write(chunk)
                 QApplication.processEvents()
     
@@ -269,14 +271,14 @@ def load(plugin_path):
     except Exception as e:
         cmds.warning('Could not execute tweener command: %s' % str(e))
     
-    answer = cmds.confirmDialog(t='Tweener Installed!',
-                                m='Tweener was installed at:\n'
+    answer = cmds.confirmDialog(title='Tweener Installed!',
+                                message='Tweener was installed at:\n'
                                   '%s\n\n'
                                   'Would you like to add a shelf button to the current shelf?' % plugin_path,
                                 button=['Yes', 'No'],
-                                db='Yes',
-                                cb='No',
-                                ds='No')
+                                defaultButton='Yes',
+                                cancelButton='No',
+                                dismissString='No')
     
     if answer == 'Yes':
         try:
@@ -289,7 +291,7 @@ def load(plugin_path):
 
 def show_offline_window():
     window = cmds.window(title="Tweener Offline Install", resizeToFitChildren=True, sizeable=False)
-    form = cmds.formLayout(nd=100)
+    form = cmds.formLayout(numberOfDivisions=100)
     
     column = cmds.columnLayout(adjustableColumn=True)
     cmds.text(label='Tweener was not downloadeded automatically.', align='left')
@@ -300,7 +302,7 @@ def show_offline_window():
               'https://github.com/monoteba/maya-tweener/releases/latest</a>',
         align='left',
         hyperlink=True,
-        highlightColor=[1.0, 1.0, 1.0])
+        highlightColor=(1.0, 1.0, 1.0))
     cmds.text(label=' ')
     cmds.text(label='The file is called \"tweener-1.0.0.zip\" or similar.', align='left')
     cmds.text(label=' ')
@@ -310,13 +312,13 @@ def show_offline_window():
     button = cmds.button(label='Install from .zip', command=partial(offline_install, window))
     cmds.setParent('..')
     
-    cmds.formLayout(form, e=True, attachForm=[(column, 'left', 10),
-                                              (column, 'top', 10),
-                                              (column, 'right', 10),
-    
-                                              (button, 'left', 10),
-                                              (button, 'bottom', 10),
-                                              (button, 'right', 10)])
+    cmds.formLayout(form, edit=True, attachForm=[(column, 'left', 10),
+                                                 (column, 'top', 10),
+                                                 (column, 'right', 10),
+
+                                                 (button, 'left', 10),
+                                                 (button, 'bottom', 10),
+                                                 (button, 'right', 10)])
     cmds.showWindow(window)
 
 

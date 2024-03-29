@@ -24,7 +24,9 @@ def interpolate(blend, mode):
     """
     Gateway for calling the function based on interpolation type.
     """
-    
+
+    sys.stdout.write('%.2f\n' % blend)
+
     if mode == options.BlendingMode.between:
         interpolate_between(blend)
     
@@ -153,7 +155,7 @@ def interpolate_default(t):
 
 def lerp_between(a, b, t):
     """
-    Linear interpolate between a and b in range [-1;1]
+    Linear interpolate between a and b in range [0;1]
 
     :param float a: first value
     :param float b: second value
@@ -162,8 +164,6 @@ def lerp_between(a, b, t):
     :rtype: float
     """
     
-    # remap t to [0;1] from [-1;1]
-    t = t * 0.5 + 0.5
     return a + (b - a) * t
 
 
@@ -180,10 +180,9 @@ def lerp_towards(a, b, t, current):
     """
 
     if t < 0:
-        t = t * 2.0 + 1.0  # remap [-1;0] to [-1;1]
+        t = t + 1.0  # remap [-1;0] to [0;1]
         return lerp_between(a, current, t)
     elif t > 0:
-        t = t * 2.0 - 1.0  # remap [0;1] to [-1;1]
         return lerp_between(current, b, t)
     else:
         return current
