@@ -12,6 +12,7 @@ if sys.version_info >= (3, 0):
 else:
     import utils as utils
 
+
 def maya_useNewAPI():
     pass
 

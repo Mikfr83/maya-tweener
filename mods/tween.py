@@ -25,8 +25,6 @@ def interpolate(blend, mode):
     Gateway for calling the function based on interpolation type.
     """
 
-    sys.stdout.write('%.2f\n' % blend)
-
     if mode == options.BlendingMode.between:
         interpolate_between(blend)
     

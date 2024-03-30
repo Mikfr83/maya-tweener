@@ -78,7 +78,7 @@ def get_anim_curves_from_objects(nodes):
     if has_anim_layers and animlayers.all_layers_locked():
         cmds.warning('All animation layers are locked!')
         
-    def process_plug(attr, plug, isBlendShape=False):
+    def process_plug(attr, plug, is_blend_shape=False):
         if plug.isLocked or not plug.isKeyable:
             return None
         
@@ -87,12 +87,12 @@ def get_anim_curves_from_objects(nodes):
         # if the attribute has a connection
         if connections:
             conn_node = connections[0].node()
-            
             api = conn_node.apiType()
+
             if api in ANIM_CURVE_TYPES:
                 # filter out attributes not selected in channelbox
                 if channelbox_attr:
-                    if isBlendShape:
+                    if is_blend_shape:
                         attr_name = plug.partialName(useAlias=True)
                     else:
                         attr_name = om.MFnAttribute(attr).shortName
@@ -103,12 +103,12 @@ def get_anim_curves_from_objects(nodes):
                 # add the node if it matches one of the types we want
                 curves.append(om.MFnDependencyNode(conn_node))
                 plugs.append(plug)
-        
+
             # find curve in animation layer
             elif has_anim_layers and api in animlayers.BLEND_NODE_TYPES:
                 # filter out attributes not selected in channelbox
                 if channelbox_attr:
-                    if isBlendShape:
+                    if is_blend_shape:
                         attr_name = plug.partialName(useAlias=True)
                     else:
                         attr_name = om.MFnAttribute(attr).shortName
@@ -139,8 +139,8 @@ def get_anim_curves_from_objects(nodes):
             if plug.isArray:
                 for i in plug.getExistingArrayAttributeIndices():
                     weight_plug = plug.elementByLogicalIndex(i)
-                    process_plug(attr=weight_plug.attribute(), plug=weight_plug, isBlendShape=True)
-        
+                    process_plug(attr=weight_plug.attribute(), plug=weight_plug, is_blend_shape=True)
+
         # get all attributes
         attr_count = node.attributeCount()
         for index in range(attr_count):
@@ -282,11 +282,11 @@ def get_channelbox_attributes():
     
     attr = set()
     
-    s1 = cmds.channelBox('mainChannelBox', q=True, selectedMainAttributes=True)
-    s2 = cmds.channelBox('mainChannelBox', q=True, selectedShapeAttributes=True)
-    s3 = cmds.channelBox('mainChannelBox', q=True, selectedHistoryAttributes=True)
-    s4 = cmds.channelBox('mainChannelBox', q=True, selectedOutputAttributes=True)
-    
+    s1 = cmds.channelBox('mainChannelBox', query=True, selectedMainAttributes=True)
+    s2 = cmds.channelBox('mainChannelBox', query=True, selectedShapeAttributes=True)
+    s3 = cmds.channelBox('mainChannelBox', query=True, selectedHistoryAttributes=True)
+    s4 = cmds.channelBox('mainChannelBox', query=True, selectedOutputAttributes=True)
+
     if s1:
         attr |= set(s1)
     if s2:
@@ -339,17 +339,17 @@ def is_panel_type_visible(typ):
     """
     
     try:
-        for panel in cmds.getPanel(sty=typ):
-            control = cmds.scriptedPanel(panel, q=True, ctl=True)
+        for panel in cmds.getPanel(scriptType=typ):
+            control = cmds.scriptedPanel(panel, query=True, control=True)
             if control:
                 control = control.split('|')[0]
                 
-                if cmds.window(control, q=True, ex=True):
-                    if cmds.window(control, q=True, vis=True) and not cmds.window(control, q=True, i=True):
+                if cmds.window(control, query=True, exists=True):
+                    if cmds.window(control, query=True, visible=True) and not cmds.window(control, query=True, iconify=True):
                         return True
-                elif cmds.workspaceControl(control, q=True, ex=True):
-                    if cmds.workspaceControl(control, q=True, vis=True) \
-                            and not cmds.workspaceControl(control, q=True, collapse=True):
+                elif cmds.workspaceControl(control, query=True, exists=True):
+                    if cmds.workspaceControl(control, query=True, visible=True) \
+                            and not cmds.workspaceControl(control, query=True, collapse=True):
                         return True
     except Exception as e:
         sys.stdout.write('# Error determining window visibility of type %s: %s\n' % (typ, str(e)))
@@ -369,7 +369,7 @@ def get_time_slider_range():
     # get time slider range
     aTimeSlider = mel.eval('$tmpVar=$gPlayBackSlider')
     
-    time_range = cmds.timeControl(aTimeSlider, q=True, rangeArray=True)
+    time_range = cmds.timeControl(aTimeSlider, query=True, rangeArray=True)
     time_range = (time_range[0], time_range[1] - 1)  # end is one more than selected
     
     return tuple(time_range)
