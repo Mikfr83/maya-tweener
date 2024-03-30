@@ -97,10 +97,16 @@ def get_anim_curves_from_objects(nodes):
             conn_node = connections[0].node()
             api = conn_node.apiType()
 
-            if api == om.MFn.kCharacter:
-                character_node = get_curve_through_character(plug)
-                if character_node:
-                    conn_node = character_node
+            if api == om.MFn.kPairBlend:
+                return  # skip blend nodes for now
+                blend_node = get_pair_blend_curve(plug)
+                if blend_node:
+                    conn_node = blend_node
+                    api = conn_node.apiType()
+            elif api == om.MFn.kCharacter:
+                deep_node = get_deep_curve(plug)
+                if deep_node:
+                    conn_node = deep_node
                     api = conn_node.apiType()
 
             if api in ANIM_CURVE_TYPES:
@@ -115,6 +121,7 @@ def get_anim_curves_from_objects(nodes):
                         return None
             
                 # add the node if it matches one of the types we want
+                print(om.MFnDependencyNode(conn_node).name())
                 curves.append(om.MFnDependencyNode(conn_node))
                 plugs.append(plug)
 
@@ -171,8 +178,8 @@ def get_anim_curves_from_objects(nodes):
     return curves, plugs
 
 
-def get_curve_through_character(plug):
-    """ Find character sets from selected nodes
+def get_deep_curve(plug):
+    """ Find curve by traversing graph
 
     :type plug: maya.api.OpenMaya.MPlug
     :rtype: maya.api.OpenMaya.MObject or None
@@ -188,6 +195,15 @@ def get_curve_through_character(plug):
         return iterator.currentNode()
 
     return None
+
+
+def get_pair_blend_curve(plug):
+    """ Find curve by traversing graph
+
+    :type plug: maya.api.OpenMaya.MPlug
+    :rtype: maya.api.OpenMaya.MObject or None
+    """
+    pass
 
 
 def get_selected_anim_curves():
