@@ -121,7 +121,6 @@ def get_anim_curves_from_objects(nodes):
                         return None
             
                 # add the node if it matches one of the types we want
-                print(om.MFnDependencyNode(conn_node).name())
                 curves.append(om.MFnDependencyNode(conn_node))
                 plugs.append(plug)
 
