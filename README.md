@@ -1,7 +1,7 @@
 # Tweener <img src="icons/tweener-icon.svg" width="32px" height="32px">
 
-<p align="center">
-<img src="images/tweener-screenshot.png" width="50%" height="auto">
+<p style="text-align: center">
+<img alt="tweener screenshot" src="images/tweener-screenshot.png" width="50%" height="auto">
 </p>
 
 Tweener has nothing to do with young people, basketball or [that tennis move between your legs](https://en.wikipedia.org/wiki/Tweener_(tennis)).
@@ -42,23 +42,23 @@ explore each type. See the description of each mode below.
 
 ### Blend Modes
 
-| Icon | Mode | Description |
-| :---: | :--- | :--- |
-| <img src="icons/between.svg" width="20" height="20"> | Between | Interpolates between two adjacent keys, ignoring the current key. |
-| <img src="icons/towards.svg" width="20" height="20"> | Towards | Interpolates towards two adjacent keys based on the current key. |
-| <img src="icons/average.svg" width="20" height="20"> | Average | Interpolates towards the average value of the selected keys. |
-| <img src="icons/curve.svg" width="20" height="20"> | Curve | Interpolates along the curve formed by the two adjacent keys' tangents. |
-| <img src="icons/default.svg" width="20" height="20"> | Default | Interpolates towards or away from the default value of each attribute. |
+|                         Icon                         | Mode    | Description                                                             |
+|:----------------------------------------------------:|:--------|:------------------------------------------------------------------------|
+| <img src="icons/between.svg" width="20" height="20"> | Between | Interpolates between two adjacent keys, ignoring the current key.       |
+| <img src="icons/towards.svg" width="20" height="20"> | Towards | Interpolates towards two adjacent keys based on the current key.        |
+| <img src="icons/average.svg" width="20" height="20"> | Average | Interpolates towards the average value of the selected keys.            |
+|  <img src="icons/curve.svg" width="20" height="20">  | Curve   | Interpolates along the curve formed by the two adjacent keys' tangents. |
+| <img src="icons/default.svg" width="20" height="20"> | Default | Interpolates towards or away from the default value of each attribute.  |
 
 ### Additional Buttons
 
-| Icon | Name | Description |
-| :---: | :--- | :--- |
-| <img src="icons/overshoot.svg" width="20" height="20"> | Overshoot | Extends the interpolation from `[-100:100]` to `[-200:200]` and allows you to go past the target. |
-| <img src="icons/keyhammer.svg" width="20" height="20"> | Key Hammer | Adds a key for all attributes, wherever a key is already set. This ensures that all attributes are keyed on all keyframes. Useful if you think like a traditional animator or need to retime. |
-| <img src="icons/tick-special.svg" width="20" height="20"> | Special Tick Color | Sets the current frame, selected keys, or time range to the special keyframe tick color. Caution: This cannot be undone! |
-| <img src="icons/tick-normal.svg" width="20" height="20"> | Normal Tick Color | Sets the current frame, selected keys, or time range to the normal keyframe tick color. Caution: This cannot be undone! |
-| <img src="icons/live-preview.svg" width="20" height="20"> | Live Preview | Toggles live preview when dragging slider. |
+|                           Icon                            | Name               | Description                                                                                                                                                                                   |
+|:---------------------------------------------------------:|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  <img src="icons/overshoot.svg" width="20" height="20">   | Overshoot          | Extends the interpolation from `[-100:100]` to `[-200:200]` and allows you to go past the target.                                                                                             |
+|  <img src="icons/keyhammer.svg" width="20" height="20">   | Key Hammer         | Adds a key for all attributes, wherever a key is already set. This ensures that all attributes are keyed on all keyframes. Useful if you think like a traditional animator or need to retime. |
+| <img src="icons/tick-special.svg" width="20" height="20"> | Special Tick Color | Sets the current frame, selected keys, or time range to the special keyframe tick color. Caution: This cannot be undone!                                                                      |
+| <img src="icons/tick-normal.svg" width="20" height="20">  | Normal Tick Color  | Sets the current frame, selected keys, or time range to the normal keyframe tick color. Caution: This cannot be undone!                                                                       |
+| <img src="icons/live-preview.svg" width="20" height="20"> | Live Preview       | Toggles live preview when dragging slider.                                                                                                                                                    |
 
 ### Other Options
 

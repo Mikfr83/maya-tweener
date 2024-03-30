@@ -24,6 +24,8 @@ ANIM_CURVE_TYPES = [om.MFn.kAnimCurveTimeToAngular,
                     om.MFn.kAnimCurveTimeToUnitless,
                     om.MFn.kAnimCurveTimeToTime]
 
+ANIM_CURVE_FILTER = om.MFn.kAnimCurveTimeToAngular | om.MFn.kAnimCurveTimeToDistance | om.MFn.kAnimCurveTimeToUnitless |om.MFn.kAnimCurveTimeToTime
+
 OBJECT_SELECTION_ITEMS = [om.MItSelectionList.kDagSelectionItem,
                           om.MItSelectionList.kDNselectionItem]
 
@@ -67,36 +69,48 @@ def get_anim_curves_from_objects(nodes):
     :return: Tuple of curves and plugs
     :rtype: (list of maya.api.OpenMaya.MFnDependencyNode, list of maya.api.OpenMaya.MPlug)
     """
-    
+
     curves = []
     plugs = []
     channelbox_attr = get_channelbox_attributes()
-    
+
     animlayers.cache.reset()  # always reset cache before querying for animation layers!
     has_anim_layers = animlayers.has_anim_layers()
     
     if has_anim_layers and animlayers.all_layers_locked():
         cmds.warning('All animation layers are locked!')
         
-    def process_plug(attr, plug, is_blend_shape=False):
+    def process_plug(attr, plug, in_array=False):
+        """
+        :type attr:maya.api.OpenMaya
+        :type plug: maya.api.OpenMaya.MPlug
+        :type in_array: bool
+        """
+
         if plug.isLocked or not plug.isKeyable:
             return None
-        
+
         connections = plug.connectedTo(True, False)
-    
+
         # if the attribute has a connection
         if connections:
             conn_node = connections[0].node()
             api = conn_node.apiType()
 
+            if api == om.MFn.kCharacter:
+                character_node = get_curve_through_character(plug)
+                if character_node:
+                    conn_node = character_node
+                    api = conn_node.apiType()
+
             if api in ANIM_CURVE_TYPES:
                 # filter out attributes not selected in channelbox
                 if channelbox_attr:
-                    if is_blend_shape:
+                    if in_array:
                         attr_name = plug.partialName(useAlias=True)
                     else:
                         attr_name = om.MFnAttribute(attr).shortName
-                        
+
                     if attr_name not in channelbox_attr:
                         return None
             
@@ -108,7 +122,7 @@ def get_anim_curves_from_objects(nodes):
             elif has_anim_layers and api in animlayers.BLEND_NODE_TYPES:
                 # filter out attributes not selected in channelbox
                 if channelbox_attr:
-                    if is_blend_shape:
+                    if in_array:
                         attr_name = plug.partialName(useAlias=True)
                     else:
                         attr_name = om.MFnAttribute(attr).shortName
@@ -133,22 +147,47 @@ def get_anim_curves_from_objects(nodes):
     
     # get curves
     for node in nodes:
-        # if blendshape
         if node.object().apiType() == om.MFn.kBlendShape:
             plug = node.findPlug('weight', True)
             if plug.isArray:
                 for i in plug.getExistingArrayAttributeIndices():
                     weight_plug = plug.elementByLogicalIndex(i)
-                    process_plug(attr=weight_plug.attribute(), plug=weight_plug, is_blend_shape=True)
+                    weight_attr = weight_plug.attribute()
+                    process_plug(attr=weight_attr, plug=weight_plug, in_array=True)
 
         # get all attributes
         attr_count = node.attributeCount()
         for index in range(attr_count):
             attr = node.attribute(index)
             plug = node.findPlug(attr, True)
-            process_plug(attr=attr, plug=plug)
-    
+            if plug.isArray:
+                for i in plug.getExistingArrayAttributeIndices():
+                    child_plug = plug.elementByLogicalIndex(i)
+                    child_attr = child_plug.attribute()
+                    process_plug(attr=child_attr, plug=child_plug, in_array=True)
+            else:
+                process_plug(attr=attr, plug=plug)
+
     return curves, plugs
+
+
+def get_curve_through_character(plug):
+    """ Find character sets from selected nodes
+
+    :type plug: maya.api.OpenMaya.MPlug
+    :rtype: maya.api.OpenMaya.MObject or None
+    """
+
+    iterator = om.MItDependencyGraph(plug.connectedTo(True, False)[0],
+                                     ANIM_CURVE_FILTER,
+                                     om.MItDependencyGraph.kUpstream,
+                                     om.MItDependencyGraph.kDepthFirst,
+                                     om.MItDependencyGraph.kNodeLevel)
+
+    while not iterator.isDone():
+        return iterator.currentNode()
+
+    return None
 
 
 def get_selected_anim_curves():
